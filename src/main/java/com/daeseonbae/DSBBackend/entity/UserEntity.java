@@ -22,4 +22,6 @@ public class UserEntity {
     private String department;
 
     private String nickname;
+
+    private String role;
 }

@@ -15,7 +15,7 @@ public class JoinController {
         this.joinService = joinService;
     }
 
-    @PostMapping("/join")
+    @PostMapping("/api/signup")
     public String joinProcess(JoinDTO joinDTO){
 
         boolean success = joinService.joinProcess(joinDTO);
