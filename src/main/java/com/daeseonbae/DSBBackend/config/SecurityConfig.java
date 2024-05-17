@@ -1,5 +1,6 @@
 package com.daeseonbae.DSBBackend.config;
 
+import com.daeseonbae.DSBBackend.jwt.JWTUtil;
 import com.daeseonbae.DSBBackend.jwt.LoginFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,10 +18,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
+    private final JWTUtil jwtUtil;
 
     //아래 빈의 매개변수를 위한 생성자 주입
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration){
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration,JWTUtil jwtUtil){
         this.authenticationConfiguration = authenticationConfiguration;
+        this.jwtUtil = jwtUtil;
     }
 
     //필터에 AuthenticationManager 주입을 위한 빈 등록
@@ -46,8 +49,9 @@ public class SecurityConfig {
         //http basic 인증 방식 disable
         http.httpBasic((auth) -> auth.disable());
 
+
         http.authorizeHttpRequests((auth) -> auth
-                .requestMatchers("/api/login", "/", "/api/signup").permitAll() //해당 경로는 모든권한을 허용함
+                .requestMatchers("/api/login", "/", "/api/signup").permitAll()//해당 경로는 모든권한을 허용함
                 .anyRequest().authenticated()); //그외의 경로에는 로그인한 사용자만 접속 가능함
 
         //세션 설정
@@ -55,7 +59,11 @@ public class SecurityConfig {
         http.sessionManagement((session) -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        http.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration)), UsernamePasswordAuthenticationFilter.class);
+        //의존관계 주입 및 로그인 엔드포인트 경로 변경
+        LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration),jwtUtil);
+        loginFilter.setFilterProcessesUrl("/api/login");
+
+        http.addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

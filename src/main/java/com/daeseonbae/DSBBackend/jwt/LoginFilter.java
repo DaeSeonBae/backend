@@ -1,5 +1,6 @@
 package com.daeseonbae.DSBBackend.jwt;
 
+import com.daeseonbae.DSBBackend.dto.CustomUserDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,17 +9,22 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
 
 //form 로그인 방식을 disable을 하였기 때문에 UsernamePasswordAuthenticationFilter를 대체할 커스텀 필터 생성
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
+    private final JWTUtil jwtUtil;
 
-    public LoginFilter(AuthenticationManager authenticationManager) {
+    public LoginFilter(AuthenticationManager authenticationManager,JWTUtil jwtUtil) {
         this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
     }
 
     // obtainUsername() 메서드를 오버라이드하여 email 값을 가져오도록 함
@@ -43,12 +49,25 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     //로그인 성공시 실행하는 메소드
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        System.out.println("성공");
+        CustomUserDetails customUserDetails = (CustomUserDetails) authResult.getPrincipal();
+        String email = customUserDetails.getUsername();
+
+        //role 값을 가져옴
+        Collection<? extends GrantedAuthority> authorities = authResult.getAuthorities();
+        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
+        GrantedAuthority auth = iterator.next();
+        String role = auth.getAuthority();
+
+        //토큰을 받아옴
+        String token = jwtUtil.createJwt(email, role, 60 * 60 * 10L);
+
+        //헤더 정보에 담아서 응답함(RFC 7235 인증 방식 사용)
+        response.addHeader("Authorization", "Bearer " + token);
     }
 
     //로그인 실패시 실행하는 메소드
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-        System.out.println("실패");
+        response.setStatus(401);
     }
 }

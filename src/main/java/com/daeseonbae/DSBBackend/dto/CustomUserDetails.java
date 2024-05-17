@@ -4,6 +4,7 @@ import com.daeseonbae.DSBBackend.entity.UserEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class CustomUserDetails implements UserDetails {
@@ -14,10 +15,18 @@ public class CustomUserDetails implements UserDetails {
         this.userEntity = userEntity;
     }
 
-    //Role 값을 반환함. 사용 x
+    //Role 값을 반환함
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        Collection<GrantedAuthority> collection = new ArrayList<>();
+        collection.add(new GrantedAuthority() {
+            @Override
+            public String getAuthority() {
+                return userEntity.getRole();
+            }
+        });
+
+        return collection;
     }
 
     @Override
