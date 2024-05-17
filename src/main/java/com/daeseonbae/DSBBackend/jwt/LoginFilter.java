@@ -59,7 +59,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String role = auth.getAuthority();
 
         //토큰을 받아옴
-        String token = jwtUtil.createJwt(email, role, 60 * 60 * 10L);
+        String token = jwtUtil.createJwt(email, role, 1000 * 60 * 30L);
 
         //헤더 정보에 담아서 응답함(RFC 7235 인증 방식 사용)
         response.addHeader("Authorization", "Bearer " + token);

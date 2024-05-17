@@ -1,5 +1,6 @@
 package com.daeseonbae.DSBBackend.config;
 
+import com.daeseonbae.DSBBackend.jwt.JWTFilter;
 import com.daeseonbae.DSBBackend.jwt.JWTUtil;
 import com.daeseonbae.DSBBackend.jwt.LoginFilter;
 import org.springframework.context.annotation.Bean;
@@ -58,6 +59,8 @@ public class SecurityConfig {
         //토큰 방식이기때문에 세션이 필요 없어 STATELESS 상태로 설정
         http.sessionManagement((session) -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        http.addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
 
         //의존관계 주입 및 로그인 엔드포인트 경로 변경
         LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration),jwtUtil);
