@@ -1,6 +1,7 @@
 package com.daeseonbae.DSBBackend.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,10 +14,11 @@ public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     private String email;
 
+    @JsonIgnore
     private String password;
 
     private String department;
