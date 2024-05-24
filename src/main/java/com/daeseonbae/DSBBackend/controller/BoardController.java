@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/board")
@@ -25,5 +26,10 @@ public class BoardController {
     @GetMapping("/list")
     public List<BoardEntity> boardList(){
         return boardService.boardList();
+    }
+
+    @GetMapping("/view")
+    public Optional<BoardEntity> boardView(Integer id){
+        return boardService.boardView(id);
     }
 }
