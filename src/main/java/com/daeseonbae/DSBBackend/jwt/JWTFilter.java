@@ -48,10 +48,14 @@ public class JWTFilter extends OncePerRequestFilter {
 
         String email = jwtUtil.getUsername(token);
         String role = jwtUtil.getRole(token);
+        String nickName = jwtUtil.getNickName(token);
+        String department = jwtUtil.getDepartment(token);
 
         //유저 초기화 진행
         UserEntity userEntity = new UserEntity();
         userEntity.setEmail(email);
+        userEntity.setNickname(nickName);
+        userEntity.setDepartment(department);
         //비밀번호값의 경우 토큰에 존재 하지 않음 따라서 매번 DB요청을 방지를 위해 임의로 작성
         userEntity.setPassword("1234");
         userEntity.setRole(role);

@@ -21,7 +21,7 @@ public class JWTUtil {
     }
 
 
-    //세개의 검증 메소드
+    //네개의 검증 메소드
     public String getUsername(String token){
         //verifyWith -->  JWT의 서명을 검증하기 위해 사용되는 비밀 키를 설정, 다. 토큰을 생성할 때 사용된 키와 일치해야함
         //parseSignedClaims(toekn) -->  주어진 토큰을 파싱하고 검증함 , 서명이 유효한지 확인하고 토큰의 클레임(claim)을 추출
@@ -34,6 +34,14 @@ public class JWTUtil {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("role", String.class);
     }
 
+    public String getNickName(String token){
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("nickName", String.class);
+    }
+
+    public String getDepartment(String token){
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("department", String.class);
+    }
+
     public boolean isExpired(String token){
         //getExpiration --> JWT의 만료시간을 가져옴 이후 현재시간과 비교하여 만료되면 true를 반환
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
@@ -43,10 +51,12 @@ public class JWTUtil {
 
 
     //토큰을 생성
-    public String createJwt(String email,String role,Long expiredMs){
+    public String createJwt(String email,String role,String nickName ,String department,Long expiredMs){
         return Jwts.builder()
-                .claim("email",email)
-                .claim("role",role)
+                .claim("email", email)
+                .claim("role", role)
+                .claim("nickName", nickName)
+                .claim("department",department)
                 .issuedAt(new Date(System.currentTimeMillis()))  //현재 발행 시간
                 .expiration(new Date(System.currentTimeMillis() + expiredMs)) //만료시간 설정
                 .signWith(secretKey) //암호화
