@@ -1,4 +1,3 @@
-FROM openjdk:17-jdk-alpine
-VOLUME /tmp
-COPY build/libs/*.jar app.jar
-ENTRYPOINT ["java","-Dspring.profiles.active=aws","-jar","/app.jar"]
+FROM openjdk:17-jdk-slim
+ADD /build/libs/*.jar app.jar
+ENTRYPOINT ["java","-Djava.securityegd=file:/dev/./urandom","-jar","/app.jar"]
