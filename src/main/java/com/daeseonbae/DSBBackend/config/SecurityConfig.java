@@ -79,7 +79,7 @@ public class SecurityConfig {
 
 
         http.authorizeHttpRequests((auth) -> auth
-                .requestMatchers("/api/login", "/", "/api/signup").permitAll()//해당 경로는 모든권한을 허용함
+                .requestMatchers("/api/login", "/", "/api/signup","/test").permitAll()//해당 경로는 모든권한을 허용함
                 .anyRequest().authenticated()); //그외의 경로에는 로그인한 사용자만 접속 가능함
 
         //세션 설정
