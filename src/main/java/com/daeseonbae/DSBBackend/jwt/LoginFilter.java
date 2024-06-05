@@ -50,9 +50,13 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         CustomUserDetails customUserDetails = (CustomUserDetails) authResult.getPrincipal();
+        Integer id = customUserDetails.getId();
         String email = customUserDetails.getUsername();
         String department = customUserDetails.getDepartment();
         String nickName = customUserDetails.getNickname();
+
+        System.out.println("successfulAuthentication id = " + id);
+        System.out.println("successfulAuthentication email = " + email);
 
         //role 값을 가져옴
         Collection<? extends GrantedAuthority> authorities = authResult.getAuthorities();
@@ -60,10 +64,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
 
-        System.out.println(nickName);
 
         //토큰을 받아옴
-        String token = jwtUtil.createJwt(email, role,nickName,department,1000 * 60 * 30L);
+        String token = jwtUtil.createJwt(id,email, role,nickName,department,1000 * 60 * 30L);
 
         //헤더 정보에 담아서 응답함(RFC 7235 인증 방식 사용)
         response.addHeader("Authorization", "Bearer " + token);

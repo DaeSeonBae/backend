@@ -21,6 +21,7 @@ public class UserInfoController {
         // 사용자 정보 가져오기
         CustomUserDetails customUserDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
+        Integer id = customUserDetails.getId();
         String nickName = customUserDetails.getNickname();
         String email = customUserDetails.getUsername();
         String department = customUserDetails.getDepartment();
@@ -32,6 +33,9 @@ public class UserInfoController {
 
         UserEntity userEntity = new UserEntity();
 
+        System.out.println("id =>"+id);
+
+        userEntity.setId(id);
         userEntity.setNickname(nickName);
         userEntity.setEmail(email);
         userEntity.setDepartment(department);

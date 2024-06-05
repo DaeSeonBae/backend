@@ -42,6 +42,10 @@ public class JWTUtil {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("department", String.class);
     }
 
+    public Integer getId(String token){
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("id", Integer.class);
+    }
+
     public boolean isExpired(String token){
         //getExpiration --> JWT의 만료시간을 가져옴 이후 현재시간과 비교하여 만료되면 true를 반환
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
@@ -49,10 +53,10 @@ public class JWTUtil {
 
 
 
-
     //토큰을 생성
-    public String createJwt(String email,String role,String nickName ,String department,Long expiredMs){
+    public String createJwt(Integer id,String email,String role,String nickName ,String department,Long expiredMs){
         return Jwts.builder()
+                .claim("id",id)
                 .claim("email", email)
                 .claim("role", role)
                 .claim("nickName", nickName)

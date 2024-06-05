@@ -46,6 +46,7 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
+        Integer id = jwtUtil.getId(token);
         String email = jwtUtil.getUsername(token);
         String role = jwtUtil.getRole(token);
         String nickName = jwtUtil.getNickName(token);
@@ -53,6 +54,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
         //유저 초기화 진행
         UserEntity userEntity = new UserEntity();
+        userEntity.setId(id);
         userEntity.setEmail(email);
         userEntity.setNickname(nickName);
         userEntity.setDepartment(department);
