@@ -1,6 +1,7 @@
 package com.daeseonbae.DSBBackend.service;
 
 import com.daeseonbae.DSBBackend.entity.BoardEntity;
+import com.daeseonbae.DSBBackend.jwt.JWTUtil;
 import com.daeseonbae.DSBBackend.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,6 +16,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
+    private final JWTUtil jwtUtil;
 
     //게시물 작성
     @Transactional
@@ -38,6 +40,24 @@ public class BoardService {
     //특정 게시물 조회
     public Optional<BoardEntity> boardView(Integer id){
         return boardRepository.findById(id);
+    }
+
+    //특정 게시물 삭제
+    public boolean boardDelete(Integer id,String token){
+        //요청한 사용자의 email 추출
+        String email = jwtUtil.getUsername(token.substring(7));
+        //null값을 안전하게 처리하기 위해 Optional 사용
+        Optional<BoardEntity> optionalBoard = boardRepository.findById(id);
+
+        if(optionalBoard.isPresent()){ //값이 있으면 true
+            BoardEntity boardEntity = optionalBoard.get();
+            if(boardEntity.getWriter_email().equals(email)){
+                boardRepository.deleteById(id);
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }
