@@ -1,12 +1,11 @@
 package com.daeseonbae.DSBBackend.dto.board;
 
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter @Setter
+
+@Data
 public class BoardCreateDTO {
     private String title;
     private String content;
-    private String writer_email;
 }
