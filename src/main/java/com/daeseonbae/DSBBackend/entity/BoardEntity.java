@@ -1,12 +1,9 @@
 package com.daeseonbae.DSBBackend.entity;
 
-import com.daeseonbae.DSBBackend.dto.board.BoardInfo;
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.cglib.core.Local;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;

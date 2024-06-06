@@ -1,6 +1,6 @@
 package com.daeseonbae.DSBBackend.service;
 
-import com.daeseonbae.DSBBackend.dto.board.BoardCreateDTO;
+import com.daeseonbae.DSBBackend.dto.board.BoardRequestDTO;
 import com.daeseonbae.DSBBackend.dto.board.BoardResponseDTO;
 import com.daeseonbae.DSBBackend.entity.BoardEntity;
 import com.daeseonbae.DSBBackend.jwt.JWTUtil;
@@ -10,8 +10,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -23,10 +25,10 @@ public class BoardService {
 
     //게시물 작성
     @Transactional
-    public Integer createBoard(BoardCreateDTO boardCreateDTO){
+    public Integer createBoard(BoardRequestDTO boardRequestDTO){
         BoardEntity boardEntity = new BoardEntity();
-        boardEntity.setTitle(boardCreateDTO.getTitle());
-        boardEntity.setContent(boardCreateDTO.getContent());
+        boardEntity.setTitle(boardRequestDTO.getTitle());
+        boardEntity.setContent(boardRequestDTO.getContent());
         boardEntity.setComment_count(0L);
         boardEntity.setFavorite_count(0L);
         boardEntity.setWrite_datetime(LocalDateTime.now());
@@ -72,4 +74,25 @@ public class BoardService {
         return false;
     }
 
+
+    //특정 게시물 수정
+    public boolean boardUpdate(Integer id, BoardRequestDTO boardRequestDTO, String token) throws AccessDeniedException {
+        String email = jwtUtil.getUsername(token.substring(7));
+        //id값에 맞는 게시글 찾기
+        Optional<BoardEntity> optionalBoardEntity = Optional.ofNullable(boardRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("번호에 맞는 게시글을 찾지 못했습니다!")));
+        //게시글 작성자의 이메일과 요청자의 이메일 비교
+        BoardEntity boardEntity = optionalBoardEntity.get();
+        if (!boardEntity.getWriter_email().equals(email)) {
+            throw new AccessDeniedException("게시글 작성자가 아닙니다!");
+        }
+
+        //게시글 수정
+        boardEntity.setTitle(boardRequestDTO.getTitle());
+        boardEntity.setContent(boardRequestDTO.getContent());
+        boardEntity.setWrite_datetime(LocalDateTime.now());
+
+        boardRepository.save(boardEntity);
+        return true;
+    }
 }
