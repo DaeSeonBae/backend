@@ -1,6 +1,7 @@
 package com.daeseonbae.DSBBackend.controller;
 
 import com.daeseonbae.DSBBackend.dto.AiRequestDTO;
+import com.daeseonbae.DSBBackend.dto.AiResponseDTO;
 import com.daeseonbae.DSBBackend.service.AiService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,9 +20,9 @@ public class AiController {
     }
 
     @PostMapping("/api/ai")
-    public ResponseEntity<String> processQuery(@RequestBody AiRequestDTO requestDTO) {
+    public ResponseEntity<AiResponseDTO> processQuery(@RequestBody AiRequestDTO requestDTO) {
         String query = requestDTO.getQuery();
-        String result = apiService.processQuery(query);
+        AiResponseDTO result = apiService.processQuery(query);
         return ResponseEntity.ok(result);
     }
 }

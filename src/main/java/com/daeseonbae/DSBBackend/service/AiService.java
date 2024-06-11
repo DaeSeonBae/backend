@@ -1,6 +1,9 @@
 package com.daeseonbae.DSBBackend.service;
 
 import com.daeseonbae.DSBBackend.dto.AiRequestDTO;
+import com.daeseonbae.DSBBackend.dto.AiResponseDTO;
+import com.daeseonbae.DSBBackend.entity.AiEntity;
+import com.daeseonbae.DSBBackend.repository.AiRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -14,13 +17,15 @@ public class AiService {
 
     private final RestTemplate restTemplate;
     private final String djangoServerUrl;
+    private final AiRepository aiRepository;
 
-    public AiService(RestTemplate restTemplate, @Value("${django.server.url}") String djangoServerUrl) {
+    public AiService(RestTemplate restTemplate, @Value("${django.server.url}") String djangoServerUrl, AiRepository aiRepository) {
         this.restTemplate = restTemplate;
         this.djangoServerUrl = djangoServerUrl;
+        this.aiRepository = aiRepository;
     }
 
-    public String processQuery(String query) {
+    public AiResponseDTO processQuery(String query) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
@@ -39,9 +44,25 @@ public class AiService {
                     String.class
             );
 
-            return responseEntity.getBody();
+            if (responseEntity.getStatusCode() == HttpStatus.OK) {
+                String responseBody = responseEntity.getBody();
+
+                AiResponseDTO responseDto = new AiResponseDTO();
+                responseDto.setResponse(responseBody);
+
+                // Save to database
+                AiEntity aiEntity = new AiEntity();
+                aiEntity.setQuery(query);
+                aiEntity.setResponse(responseBody);
+                aiEntity.setNumber(aiRepository.findAll().size() + 1);  // Set number as size of existing records + 1
+                aiRepository.save(aiEntity);
+
+                return responseDto;
+            } else {
+                throw new RuntimeException("Error: " + responseEntity.getStatusCode().toString());
+            }
         } catch (Exception e) {
-            throw new RuntimeException("Error creating JSON request", e);
+            throw new RuntimeException("Error processing query", e);
         }
     }
 }
