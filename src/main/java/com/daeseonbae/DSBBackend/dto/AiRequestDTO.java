@@ -7,4 +7,5 @@ import lombok.Setter;
 @Setter
 public class AiRequestDTO {
     private String query;
+    private Integer userId;
 }

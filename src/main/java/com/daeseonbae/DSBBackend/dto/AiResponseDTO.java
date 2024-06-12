@@ -7,5 +7,4 @@ import lombok.Setter;
 @Setter
 public class AiResponseDTO {
     private String response;
-
 }
