@@ -36,7 +36,7 @@ public class AiController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/ai")
+    @GetMapping("/api/ai")
     public ResponseEntity<List<AiResponseDTO>> getQueryHistory(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
         // Extract token from Authorization header
         String token = authorizationHeader.substring(7);
