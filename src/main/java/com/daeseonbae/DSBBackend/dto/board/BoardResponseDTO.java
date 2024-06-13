@@ -16,12 +16,12 @@ public class BoardResponseDTO {
     private String writerEmail;
 
     public BoardResponseDTO (BoardEntity boardEntity){
-        this.boardNumber = boardEntity.getBoard_number();
+        this.boardNumber = boardEntity.getBoardNumber();
         this.title = boardEntity.getTitle();
         this.content = boardEntity.getContent();
-        this.writeDatetime = boardEntity.getWrite_datetime();
-        this.favoriteCount = boardEntity.getFavorite_count();
-        this.commentCount = boardEntity.getComment_count();
-        this.writerEmail = boardEntity.getWriter_email();
+        this.writeDatetime = boardEntity.getWriteDatetime();
+        this.favoriteCount = boardEntity.getFavoriteCount();
+        this.commentCount = boardEntity.getCommentCount();
+        this.writerEmail = boardEntity.getWriterEmail();
     }
 }

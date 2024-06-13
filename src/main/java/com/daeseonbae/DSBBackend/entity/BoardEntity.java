@@ -16,7 +16,8 @@ public class BoardEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer board_number;
+    @Column(name = "board_number")
+    private Integer boardNumber;
 
     @Column(nullable = false)
     private String title; //제목
@@ -25,13 +26,15 @@ public class BoardEntity {
     private String content;  //내용
 
     @CreatedDate
-    private LocalDateTime write_datetime; //작성 날짜
+    @Column(name = "write_datetime")
+    private LocalDateTime writeDatetime; //작성 날짜
 
-    private Long favorite_count; //좋아요 갯수
+    @Column(name = "favorite_count")
+    private Long favoriteCount; //좋아요 갯수
 
-    private Long comment_count; //댓글 갯수
+    @Column(name = "comment_count")
+    private Long commentCount; //댓글 갯수
 
-    @Column(nullable = false)
-    private String writer_email; //작성자 이메일
-
+    @Column(name = "writer_email", nullable = false)
+    private String writerEmail; //작성자 이메일
 }

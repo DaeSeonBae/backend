@@ -1,11 +1,15 @@
 package com.daeseonbae.DSBBackend.controller;
 
 import com.daeseonbae.DSBBackend.dto.CommentRequestDTO;
-import com.daeseonbae.DSBBackend.service.CommentService;
+import com.daeseonbae.DSBBackend.dto.CommentResponseDTO;
 import com.daeseonbae.DSBBackend.jwt.JWTUtil;
+import com.daeseonbae.DSBBackend.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 public class CommentController {
@@ -19,7 +23,7 @@ public class CommentController {
         this.jwtUtil = jwtUtil;
     }
 
-    @PostMapping("/api/board/view/{boardId}")
+    @PostMapping("/api/board/comment/{boardId}")
     public String addComment(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader,
                              @PathVariable Integer boardId,
                              @RequestBody CommentRequestDTO commentRequest) {
@@ -30,5 +34,11 @@ public class CommentController {
 
         // Process comment with the userId from the token
         return commentService.processComment(boardId, userId, commentRequest);
+    }
+
+    @GetMapping("/api/board/comment/{boardId}")
+    public ResponseEntity<List<CommentResponseDTO>> getComments(@PathVariable Integer boardId) {
+        List<CommentResponseDTO> comments = commentService.getCommentsByBoardId(boardId);
+        return ResponseEntity.ok(comments);
     }
 }

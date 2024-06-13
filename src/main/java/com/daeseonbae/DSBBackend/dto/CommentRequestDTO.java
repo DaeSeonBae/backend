@@ -7,5 +7,4 @@ import lombok.Setter;
 @Setter
 public class CommentRequestDTO {
     private String content;
-    private Integer userId;
 }
