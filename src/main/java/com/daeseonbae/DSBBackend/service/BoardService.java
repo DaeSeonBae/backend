@@ -29,15 +29,15 @@ public class BoardService {
         BoardEntity boardEntity = new BoardEntity();
         boardEntity.setTitle(boardRequestDTO.getTitle());
         boardEntity.setContent(boardRequestDTO.getContent());
-        boardEntity.setComment_count(0L);
-        boardEntity.setFavorite_count(0L);
-        boardEntity.setWrite_datetime(LocalDateTime.now());
+        boardEntity.setCommentCount(0L);
+        boardEntity.setFavoriteCount(0L);
+        boardEntity.setWriteDatetime(LocalDateTime.now());
 
         String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        boardEntity.setWriter_email(currentUserEmail);
+        boardEntity.setWriterEmail(currentUserEmail);
 
         BoardEntity savedEntity = boardRepository.save(boardEntity);
-        return savedEntity.getBoard_number();
+        return savedEntity.getBoardNumber();
     }
 
     //게시물 리스트 조회
@@ -65,7 +65,7 @@ public class BoardService {
         Optional<BoardEntity> optionalBoard = boardRepository.findById(id);
         if(optionalBoard.isPresent()){ //값이 있으면 true
             BoardEntity boardEntity = optionalBoard.get();
-            if(boardEntity.getWriter_email().equals(email)){
+            if(boardEntity.getWriterEmail().equals(email)){
                 boardRepository.deleteById(id);
                 return true;
             }
@@ -83,14 +83,14 @@ public class BoardService {
                 .orElseThrow(() -> new NoSuchElementException("번호에 맞는 게시글을 찾지 못했습니다!")));
         //게시글 작성자의 이메일과 요청자의 이메일 비교
         BoardEntity boardEntity = optionalBoardEntity.get();
-        if (!boardEntity.getWriter_email().equals(email)) {
+        if (!boardEntity.getWriterEmail().equals(email)) {
             throw new AccessDeniedException("게시글 작성자가 아닙니다!");
         }
 
         //게시글 수정
         boardEntity.setTitle(boardRequestDTO.getTitle());
         boardEntity.setContent(boardRequestDTO.getContent());
-        boardEntity.setWrite_datetime(LocalDateTime.now());
+        boardEntity.setWriteDatetime(LocalDateTime.now());
 
         boardRepository.save(boardEntity);
         return true;
