@@ -27,12 +27,9 @@ public class CommentController {
     public String addComment(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader,
                              @PathVariable Integer boardId,
                              @RequestBody CommentRequestDTO commentRequest) {
-        // Extract token from Authorization header
-        String token = authorizationHeader.substring(7); // Remove "Bearer " prefix
-        // Get userId from token
+        String token = authorizationHeader.substring(7);
         Integer userId = jwtUtil.getId(token);
 
-        // Process comment with the userId from the token
         return commentService.processComment(boardId, userId, commentRequest);
     }
 

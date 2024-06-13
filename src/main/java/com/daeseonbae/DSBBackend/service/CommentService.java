@@ -31,17 +31,17 @@ public class CommentService {
     }
 
     public String processComment(Integer boardId, Integer userId, CommentRequestDTO commentRequest) {
-        // Get the user and board from the repository
+//        userId가 없으면 예외 발생
         Optional<UserEntity> optionalUser = userRepository.findById(userId);
         if (!optionalUser.isPresent()) {
             throw new RuntimeException("User not found");
         }
+//        boardId 없으면 에외 발생
         Optional<BoardEntity> optionalBoard = boardRepository.findById(boardId);
         if (!optionalBoard.isPresent()) {
             throw new RuntimeException("Board not found");
         }
 
-        // Create and save the comment
         UserEntity user = optionalUser.get();
         BoardEntity board = optionalBoard.get();
 
@@ -59,7 +59,9 @@ public class CommentService {
     public List<CommentResponseDTO> getCommentsByBoardId(Integer boardId) {
         List<CommentEntity> comments = commentRepository.findByBoardBoardNumber(boardId);
         return comments.stream()
+//                각 CommentEntity를 기반으로 CommentResponseDTO 객체를 생성
                 .map(comment -> new CommentResponseDTO(comment.getCommentNumber(), comment.getContent(), comment.getWriteDatetime(), comment.getUser().getId()))
+//                스트림의 각 요소를 리스트로 모아서 List<CommentResponseDTO> 형태로 반환
                 .collect(Collectors.toList());
     }
 }
