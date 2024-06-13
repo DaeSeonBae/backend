@@ -38,6 +38,7 @@ public class FavoriteService {
     }
 
     private void updateFavoriteCount(int boardId, int delta) {
+//        orElse(null)은 만약 해당 boardId에 해당하는 게시물이 없다면 null을 반환
         BoardEntity board = boardRepository.findById(boardId).orElse(null);
         if (board != null) {
             Long currentFavoriteCount = board.getFavoriteCount();
