@@ -10,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,11 +22,12 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
+    private final S3ImageService s3ImageService;
     private final JWTUtil jwtUtil;
 
-    //게시물 작성
+    // 게시물 작성
     @Transactional
-    public Integer createBoard(BoardRequestDTO boardRequestDTO){
+    public Integer createBoard(BoardRequestDTO boardRequestDTO) throws IOException {
         BoardEntity boardEntity = new BoardEntity();
         boardEntity.setTitle(boardRequestDTO.getTitle());
         boardEntity.setContent(boardRequestDTO.getContent());
@@ -36,61 +38,66 @@ public class BoardService {
         String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         boardEntity.setWriterEmail(currentUserEmail);
 
+        // 이미지 업로드 및 URL 저장
+        if (boardRequestDTO.getImage() != null && !boardRequestDTO.getImage().isEmpty()) {
+            String imageUrl = s3ImageService.upload(boardRequestDTO.getImage());
+            boardEntity.setImageUrl(imageUrl);
+        }
+
         BoardEntity savedEntity = boardRepository.save(boardEntity);
         return savedEntity.getBoardNumber();
     }
 
-    //게시물 리스트 조회
-    public List<BoardResponseDTO> boardList(){
-        //모든 객체 메서드를 가져옴
+    // 게시물 리스트 조회
+    public List<BoardResponseDTO> boardList() {
         List<BoardEntity> boardEntities = boardRepository.findAll();
-
-        //BoardEntity리스트를 BoardResponseDTO 리스트로 변환
         return boardEntities.stream()
                 .map(BoardResponseDTO::new)
                 .collect(Collectors.toList());
     }
 
-    //특정 게시물 조회
-    public Optional<BoardResponseDTO> boardView(Integer id){
+    // 특정 게시물 조회
+    public Optional<BoardResponseDTO> boardView(Integer id) {
         Optional<BoardEntity> optionalBoardEntity = boardRepository.findById(id);
         return optionalBoardEntity.map(BoardResponseDTO::new);
     }
 
-    //특정 게시물 삭제
-    public boolean boardDelete(Integer id,String token){
-        //요청한 사용자의 email 추출
+    // 특정 게시물 삭제
+    public boolean boardDelete(Integer id, String token) {
         String email = jwtUtil.getUsername(token.substring(7));
-        //null값을 안전하게 처리하기 위해 Optional 사용
         Optional<BoardEntity> optionalBoard = boardRepository.findById(id);
-        if(optionalBoard.isPresent()){ //값이 있으면 true
+        if (optionalBoard.isPresent()) {
             BoardEntity boardEntity = optionalBoard.get();
-            if(boardEntity.getWriterEmail().equals(email)){
+            if (boardEntity.getWriterEmail().equals(email)) {
+                if (boardEntity.getImageUrl() != null && !boardEntity.getImageUrl().isEmpty()) {
+                    s3ImageService.deleteImageFromS3(boardEntity.getImageUrl());
+                }
                 boardRepository.deleteById(id);
                 return true;
             }
         }
-
         return false;
     }
 
-
-    //특정 게시물 수정
-    public boolean boardUpdate(Integer id, BoardRequestDTO boardRequestDTO, String token) throws AccessDeniedException {
+    // 특정 게시물 수정
+    public boolean boardUpdate(Integer id, BoardRequestDTO boardRequestDTO, String token) throws IOException {
         String email = jwtUtil.getUsername(token.substring(7));
-        //id값에 맞는 게시글 찾기
         Optional<BoardEntity> optionalBoardEntity = Optional.ofNullable(boardRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("번호에 맞는 게시글을 찾지 못했습니다!")));
-        //게시글 작성자의 이메일과 요청자의 이메일 비교
+
         BoardEntity boardEntity = optionalBoardEntity.get();
         if (!boardEntity.getWriterEmail().equals(email)) {
             throw new AccessDeniedException("게시글 작성자가 아닙니다!");
         }
 
-        //게시글 수정
         boardEntity.setTitle(boardRequestDTO.getTitle());
         boardEntity.setContent(boardRequestDTO.getContent());
         boardEntity.setWriteDatetime(LocalDateTime.now());
+
+        if (boardRequestDTO.getImage() != null && !boardRequestDTO.getImage().isEmpty()) {
+            String imageUrl = s3ImageService.upload(boardRequestDTO.getImage());
+            boardEntity.setImageUrl(imageUrl);
+        }
 
         boardRepository.save(boardEntity);
         return true;

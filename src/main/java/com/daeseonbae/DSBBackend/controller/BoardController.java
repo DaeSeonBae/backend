@@ -3,11 +3,14 @@ package com.daeseonbae.DSBBackend.controller;
 import com.daeseonbae.DSBBackend.dto.board.BoardRequestDTO;
 import com.daeseonbae.DSBBackend.dto.board.BoardResponseDTO;
 import com.daeseonbae.DSBBackend.service.BoardService;
+import com.daeseonbae.DSBBackend.service.S3ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -19,10 +22,11 @@ import java.util.Optional;
 public class BoardController {
     private final BoardService boardService;
 
-    //게시물 작성
+    // 게시물 작성 (이미지 포함)
     @PostMapping
-    public Integer createBoard(@RequestBody BoardRequestDTO boardRequestDTO) {
-        return boardService.createBoard(boardRequestDTO);
+    public ResponseEntity<Integer> createBoard(@ModelAttribute BoardRequestDTO boardRequestDTO) throws IOException {
+        Integer boardId = boardService.createBoard(boardRequestDTO);
+        return ResponseEntity.ok(boardId);
     }
 
     //게시물 리스트 정보 가져오기
@@ -63,6 +67,8 @@ public class BoardController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("게시물을 찾을 수가 없습니다.");
         }catch(AccessDeniedException e){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("권한이 없습니다.");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
     }
