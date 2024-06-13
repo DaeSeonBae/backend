@@ -12,7 +12,9 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -58,6 +60,7 @@ public class AiService {
 
                 AiResponseDTO responseDto = new AiResponseDTO();
                 responseDto.setResponse(responseBody);
+                responseDto.setQuery(query);
 
                 // Save to database
                 Optional<UserEntity> optionalUser = userRepository.findById(userId);
@@ -80,5 +83,19 @@ public class AiService {
         } catch (Exception e) {
             throw new RuntimeException("Error processing query", e);
         }
+    }
+
+    public List<AiResponseDTO> getQueryHistory(Integer userId) {
+        List<AiEntity> aiEntities = aiRepository.findByUserId(userId);
+        List<AiResponseDTO> responseDtos = new ArrayList<>();
+
+        for (AiEntity entity : aiEntities) {
+            AiResponseDTO responseDto = new AiResponseDTO();
+            responseDto.setQuery(entity.getQuery());
+            responseDto.setResponse(entity.getResponse());
+            responseDtos.add(responseDto);
+        }
+
+        return responseDtos;
     }
 }
