@@ -55,7 +55,7 @@ public class BoardController {
 
     //특정 게시물 수정
     @PutMapping("/{id}")
-    public ResponseEntity<String> boardModify(@PathVariable Integer id, @RequestBody BoardRequestDTO boardRequestDTO, @RequestHeader("Authorization") String token) throws AccessDeniedException {
+    public ResponseEntity<String> boardModify(@PathVariable Integer id, @ModelAttribute BoardRequestDTO boardRequestDTO, @RequestHeader("Authorization") String token) throws AccessDeniedException {
         try{
             boolean isModify = boardService.boardUpdate(id, boardRequestDTO, token);
             if(isModify){
