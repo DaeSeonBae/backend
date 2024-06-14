@@ -33,13 +33,11 @@ public class CommentService {
 
     @Transactional
     public String processComment(Integer boardId, Integer userId, CommentRequestDTO commentRequest) {
-        // 사용자 조회
         Optional<UserEntity> optionalUser = userRepository.findById(userId);
         if (!optionalUser.isPresent()) {
             throw new RuntimeException("User not found");
         }
 
-        // 게시판 조회
         Optional<BoardEntity> optionalBoard = boardRepository.findById(boardId);
         if (!optionalBoard.isPresent()) {
             throw new RuntimeException("Board not found");
@@ -48,7 +46,6 @@ public class CommentService {
         UserEntity user = optionalUser.get();
         BoardEntity board = optionalBoard.get();
 
-        // 새로운 댓글 생성 및 저장
         CommentEntity comment = new CommentEntity();
         comment.setUser(user);
         comment.setBoard(board);
@@ -56,8 +53,6 @@ public class CommentService {
         comment.setWriteDatetime(LocalDateTime.now());
 
         commentRepository.save(comment);
-
-        // 게시판의 댓글 수 증가
         increaseCommentCount(boardId);
 
         return "Comment saved successfully";
@@ -65,15 +60,31 @@ public class CommentService {
 
     @Transactional(readOnly = true)
     public List<CommentResponseDTO> getCommentsByBoardId(Integer boardId) {
-        // 게시판에 해당하는 모든 댓글 조회
         List<CommentEntity> comments = commentRepository.findByBoardBoardNumber(boardId);
         return comments.stream()
                 .map(comment -> new CommentResponseDTO(comment.getCommentNumber(), comment.getContent(), comment.getWriteDatetime(), comment.getUser().getId()))
                 .collect(Collectors.toList());
     }
 
+    @Transactional
+    public String deleteComment(Integer commentId, Integer userId) {
+        Optional<CommentEntity> optionalComment = commentRepository.findById(commentId);
+        if (!optionalComment.isPresent()) {
+            throw new RuntimeException("Comment not found");
+        }
+
+        CommentEntity comment = optionalComment.get();
+        if (!comment.getUser().getId().equals(userId)) {
+            throw new RuntimeException("User not authorized to delete this comment");
+        }
+
+        commentRepository.delete(comment);
+        decreaseCommentCount(comment.getBoard().getBoardNumber());
+
+        return "Comment deleted successfully";
+    }
+
     private void increaseCommentCount(Integer boardId) {
-        // 게시판 조회 및 댓글 수 증가
         BoardEntity board = boardRepository.findById(boardId).orElse(null);
         if (board != null) {
             Long currentCommentCount = board.getCommentCount();
@@ -82,6 +93,17 @@ public class CommentService {
             }
             board.setCommentCount(currentCommentCount + 1);
             boardRepository.save(board);
+        }
+    }
+
+    private void decreaseCommentCount(Integer boardId) {
+        BoardEntity board = boardRepository.findById(boardId).orElse(null);
+        if (board != null) {
+            Long currentCommentCount = board.getCommentCount();
+            if (currentCommentCount != null && currentCommentCount > 0) {
+                board.setCommentCount(currentCommentCount - 1);
+                boardRepository.save(board);
+            }
         }
     }
 }

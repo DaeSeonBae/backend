@@ -38,4 +38,14 @@ public class CommentController {
         List<CommentResponseDTO> comments = commentService.getCommentsByBoardId(boardId);
         return ResponseEntity.ok(comments);
     }
+
+    @DeleteMapping("/api/board/comment/{commentId}")
+    public ResponseEntity<String> deleteComment(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader,
+                                                @PathVariable Integer commentId) {
+        String token = authorizationHeader.substring(7);
+        Integer userId = jwtUtil.getId(token);
+
+        String response = commentService.deleteComment(commentId, userId);
+        return ResponseEntity.ok(response);
+    }
 }
