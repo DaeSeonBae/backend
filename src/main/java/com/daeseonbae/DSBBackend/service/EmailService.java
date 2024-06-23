@@ -51,9 +51,13 @@ public class EmailService {
         verificationCode.setCode(code);
         verificationCodeRepository.save(verificationCode);
     }
-
-    public boolean verifyCode(String email, String code) { //인증 코드 검증
-        return verificationCodeRepository.findByEmailAndCode(email, code).isPresent();
+    @Transactional
+    public boolean verifyCode(String email, String code) { //인증 코드 검증 및 성공 시 삭제
+        boolean isValid = verificationCodeRepository.findByEmailAndCode(email, code).isPresent();
+        if (isValid) {
+            verificationCodeRepository.deleteByEmailAndCode(email, code);
+        }
+        return isValid;
     }
 
     @Transactional
