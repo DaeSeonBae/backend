@@ -2,6 +2,7 @@ package com.daeseonbae.DSBBackend.dto.board;
 
 import com.daeseonbae.DSBBackend.entity.BoardEntity;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
@@ -14,6 +15,7 @@ public class BoardResponseDTO {
     private Long favoriteCount;
     private Long commentCount;
     private String writerEmail;
+    private String image;
 
     public BoardResponseDTO (BoardEntity boardEntity){
         this.boardNumber = boardEntity.getBoardNumber();
@@ -23,5 +25,6 @@ public class BoardResponseDTO {
         this.favoriteCount = boardEntity.getFavoriteCount();
         this.commentCount = boardEntity.getCommentCount();
         this.writerEmail = boardEntity.getWriterEmail();
+        this.image = boardEntity.getImageUrl();
     }
 }

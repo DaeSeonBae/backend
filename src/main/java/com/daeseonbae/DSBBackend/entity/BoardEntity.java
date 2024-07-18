@@ -37,4 +37,6 @@ public class BoardEntity {
 
     @Column(name = "writer_email", nullable = false)
     private String writerEmail; //작성자 이메일
+
+    private String imageUrl;
 }
