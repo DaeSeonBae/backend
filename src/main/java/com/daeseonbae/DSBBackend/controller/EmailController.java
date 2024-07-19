@@ -12,13 +12,13 @@ public class EmailController {
     @Autowired
     private EmailService emailService;
 
-    @PostMapping("/api/verification")
+    @PostMapping("/api/email")
     public String sendCode(@RequestBody EmailRequest emailRequest) {
         emailService.sendVerificationCode(emailRequest.getEmail());
         return "Verification code sent to " + emailRequest.getEmail();
     }
 
-    @PostMapping("/api/verification/check")
+    @PostMapping("/api/pwd/auth")
     public String checkCode(@RequestBody VerificationRequest verificationRequest) {
         boolean isValid = emailService.verifyCode(verificationRequest.getEmail(), verificationRequest.getCode());
         return isValid ? "Verification successful" : "Verification failed";
