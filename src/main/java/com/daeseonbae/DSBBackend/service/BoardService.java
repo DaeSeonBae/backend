@@ -102,4 +102,14 @@ public class BoardService {
         boardRepository.save(boardEntity);
         return true;
     }
+
+    //Hot 게시물 리스트 가져오기
+    public List<BoardResponseDTO> boardHotList(){
+        LocalDateTime sevenDaysAgo = LocalDateTime.now().minusDays(7); //현재일로부터 7일전
+        List<BoardEntity> boardEntities = boardRepository.findRecentHotBoards(sevenDaysAgo);
+        return boardEntities.stream()
+                .map(BoardResponseDTO::new)
+                .collect(Collectors.toList());
+
+    }
 }
