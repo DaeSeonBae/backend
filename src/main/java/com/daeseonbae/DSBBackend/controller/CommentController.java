@@ -32,8 +32,7 @@ public class CommentController {
     public String addComment(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader,
                              @PathVariable Integer boardId,
                              @RequestBody CommentRequestDTO commentRequest) {
-        String token = authorizationHeader.substring(7);
-        Integer userId = jwtUtil.getId(token);
+        Integer userId = getUserId(authorizationHeader);
 
         return commentService.processComment(boardId, userId, commentRequest);
     }
@@ -53,8 +52,7 @@ public class CommentController {
                                 @RequestParam Integer boardId,
                                 @RequestBody CommentRequestDTO commentRequestDTO){
 
-        String newToken = token.substring(7);
-        Integer userId = jwtUtil.getId(newToken);
+        Integer userId = getUserId(token);
 
         boolean isModify = commentService.commentUpdate(commentId,boardId,commentRequestDTO,userId);
         if(isModify){
@@ -62,5 +60,27 @@ public class CommentController {
         }else{
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("요청 실패");
         }
+    }
+
+    //댓글 삭제
+    @DeleteMapping("/api/board/comment")
+    public ResponseEntity<String> commentDelete(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
+                                                @RequestParam Integer commentId,
+                                                @RequestParam Integer boardId,
+                                                @RequestBody CommentRequestDTO commentRequestDTO){
+
+        Integer userId = getUserId(token);
+
+        boolean isDelete = commentService.commentDelete(commentId,boardId,commentRequestDTO,userId);
+        if(isDelete){
+            return ResponseEntity.ok().build();
+        }else{
+            return ResponseEntity.status(404).body("존재하지 않는 댓글 입니다.");
+        }
+    }
+
+    public Integer getUserId(String token){
+        String newToken = token.substring(7);
+        return jwtUtil.getId(newToken);
     }
 }

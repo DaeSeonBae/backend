@@ -62,7 +62,7 @@ public class CommentService {
         commentRepository.save(comment);
 
         // 게시판의 댓글 수 증가
-        increaseCommentCount(boardId);
+        updateCommentCount(boardId,true);
 
         return "Comment saved successfully";
     }
@@ -76,19 +76,7 @@ public class CommentService {
                 .collect(Collectors.toList());
     }
 
-    private void increaseCommentCount(Integer boardId) {
-        // 게시판 조회 및 댓글 수 증가
-        BoardEntity board = boardRepository.findById(boardId).orElse(null);
-        if (board != null) {
-            Long currentCommentCount = board.getCommentCount();
-            if (currentCommentCount == null) {
-                currentCommentCount = 0L;
-            }
-            board.setCommentCount(currentCommentCount + 1);
-            boardRepository.save(board);
-        }
-    }
-
+    //댓글 수정
     public boolean commentUpdate(Integer commentId, Integer boardId, CommentRequestDTO commentRequestDTO, Integer userId) {
         try {
             Optional<BoardEntity> optionalBoardEntity = Optional.ofNullable(boardRepository.findById(boardId)
@@ -115,6 +103,55 @@ public class CommentService {
         } catch (NoSuchElementException | AccessDeniedException e) {
             // 예외 발생 시 false 반환
             return false;
+        }
+    }
+
+    //댓글 삭제
+    @Transactional
+    public boolean commentDelete(Integer commentId, Integer boardId, CommentRequestDTO commentRequestDTO, Integer userId) {
+        try{
+            Optional<BoardEntity> optionalBoardEntity = Optional.ofNullable(boardRepository.findById(boardId)
+                    .orElseThrow(() -> new NoSuchElementException("번호에 맞는 게시글을 찾지 못했습니다!")));
+
+            Optional<CommentEntity> optionalCommentEntity = Optional.ofNullable(commentRepository.findById(commentId)
+                    .orElseThrow(() -> new NoSuchElementException("번호에 맞는 댓글을 찾지 못했습니다!")));
+
+            Optional<UserEntity> optionalUserEntity = Optional.ofNullable(userRepository.findById(userId)
+                    .orElseThrow(() -> new NoSuchElementException("번호에 맞는 유저를 찾지 못했습니다!")));
+
+            CommentEntity comment = optionalCommentEntity.get();
+
+            if(!comment.getUser().getId().equals(userId)){
+                throw new AccessDeniedException("댓글 작성자가 아닙니다!");
+            }
+
+            //댓글 삭제
+            commentRepository.delete(comment);
+
+            updateCommentCount(boardId,false);
+
+            return true;
+            //게시판 댓글 수 감소
+        } catch (NoSuchElementException | AccessDeniedException e) {
+            // 예외 발생 시 false 반환
+            return false;
+        }
+    }
+
+    //댓글 수 업데이트
+    private void updateCommentCount(Integer boardId, boolean increase) {
+        BoardEntity board = boardRepository.findById(boardId).orElse(null);
+        if (board != null) {
+            Long currentCommentCount = board.getCommentCount();
+            if (currentCommentCount == null) {
+                currentCommentCount = 0L;
+            }
+            if (increase) {
+                board.setCommentCount(currentCommentCount + 1);
+            } else {
+                board.setCommentCount(Math.max(0, currentCommentCount - 1));
+            }
+            boardRepository.save(board);
         }
     }
 
