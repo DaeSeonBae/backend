@@ -33,6 +33,8 @@ public class CustomUserDetails implements UserDetails {
         return userEntity.getId();
     }
 
+    public String getEmail() {return userEntity.getEmail();}
+
     @Override
     public String getPassword() {
         return userEntity.getPassword();
@@ -66,4 +68,5 @@ public class CustomUserDetails implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 }
