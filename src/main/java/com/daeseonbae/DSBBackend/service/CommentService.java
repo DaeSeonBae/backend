@@ -5,6 +5,7 @@ import com.daeseonbae.DSBBackend.dto.CommentResponseDTO;
 import com.daeseonbae.DSBBackend.entity.BoardEntity;
 import com.daeseonbae.DSBBackend.entity.CommentEntity;
 import com.daeseonbae.DSBBackend.entity.UserEntity;
+import com.daeseonbae.DSBBackend.jwt.JWTUtil;
 import com.daeseonbae.DSBBackend.repository.BoardRepository;
 import com.daeseonbae.DSBBackend.repository.CommentRepository;
 import com.daeseonbae.DSBBackend.repository.UserRepository;
@@ -12,8 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -84,4 +88,34 @@ public class CommentService {
             boardRepository.save(board);
         }
     }
+
+    public boolean commentUpdate(Integer commentId, Integer boardId, CommentRequestDTO commentRequestDTO, Integer userId) {
+        try {
+            Optional<BoardEntity> optionalBoardEntity = Optional.ofNullable(boardRepository.findById(boardId)
+                    .orElseThrow(() -> new NoSuchElementException("번호에 맞는 게시글을 찾지 못했습니다!")));
+
+            Optional<UserEntity> optionalUserEntity = Optional.ofNullable(userRepository.findById(userId)
+                    .orElseThrow(() -> new NoSuchElementException("번호에 맞는 유저를 찾지 못했습니다!")));
+
+            Optional<CommentEntity> optionalCommentEntity = Optional.ofNullable(commentRepository.findById(commentId)
+                    .orElseThrow(() -> new NoSuchElementException("번호에 맞는 댓글을 찾지 못했습니다!")));
+
+            CommentEntity comment = optionalCommentEntity.get();
+            if (!comment.getUser().getId().equals(userId)) {
+                throw new AccessDeniedException("댓글 작성자가 아닙니다!");
+            }
+
+            // 댓글 내용 수정
+            comment.setContent(commentRequestDTO.getContent());
+            comment.setWriteDatetime(LocalDateTime.now());
+
+            commentRepository.save(comment);
+
+            return true;
+        } catch (NoSuchElementException | AccessDeniedException e) {
+            // 예외 발생 시 false 반환
+            return false;
+        }
+    }
+
 }
