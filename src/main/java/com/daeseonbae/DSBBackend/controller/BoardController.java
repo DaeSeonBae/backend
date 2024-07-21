@@ -72,4 +72,9 @@ public class BoardController {
         }
 
     }
+
+    @GetMapping("/list/hot")
+    public List<BoardResponseDTO> boardHotList(){
+        return boardService.boardHotList();
+    }
 }
