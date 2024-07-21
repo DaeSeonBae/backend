@@ -9,6 +9,8 @@ import com.daeseonbae.DSBBackend.jwt.JWTUtil;
 import com.daeseonbae.DSBBackend.repository.BoardRepository;
 import com.daeseonbae.DSBBackend.repository.CommentRepository;
 import com.daeseonbae.DSBBackend.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class CommentService {
+    private static final Logger logger = LoggerFactory.getLogger(CommentService.class);
 
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
@@ -101,6 +104,7 @@ public class CommentService {
 
             return true;
         } catch (NoSuchElementException | AccessDeniedException e) {
+            logger.error("에러 메세지:", e);
             // 예외 발생 시 false 반환
             return false;
         }
@@ -133,6 +137,7 @@ public class CommentService {
             return true;
             //게시판 댓글 수 감소
         } catch (NoSuchElementException | AccessDeniedException e) {
+            logger.error("에러 메세지:", e);
             // 예외 발생 시 false 반환
             return false;
         }
