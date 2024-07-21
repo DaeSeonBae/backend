@@ -3,12 +3,10 @@ package com.daeseonbae.DSBBackend.controller;
 import com.daeseonbae.DSBBackend.dto.CustomUserDetails;
 import com.daeseonbae.DSBBackend.dto.UserBoardDTO;
 import com.daeseonbae.DSBBackend.dto.UserCommentDTO;
+import com.daeseonbae.DSBBackend.dto.UserFavoriteDTO;
 import com.daeseonbae.DSBBackend.entity.UserEntity;
-import com.daeseonbae.DSBBackend.service.BoardService;
+import com.daeseonbae.DSBBackend.service.*;
 //import com.daeseonbae.DSBBackend.service.UserBoardService;
-import com.daeseonbae.DSBBackend.service.UserBoardService;
-import com.daeseonbae.DSBBackend.service.UserCommentService;
-import com.daeseonbae.DSBBackend.service.UserInfoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -27,11 +25,13 @@ public class UserInfoController {
     private final UserInfoService userInfoService;
     private final UserCommentService userCommentService;
     private final UserBoardService userboardService;
+    private final UserFavoriteService userfavoriteService;
 
-    public UserInfoController(UserInfoService userInfoService, UserCommentService userCommentService, UserBoardService userboardService) {
+    public UserInfoController(UserInfoService userInfoService, UserCommentService userCommentService, UserBoardService userboardService, UserFavoriteService userfavoriteService) {
         this.userInfoService = userInfoService;
         this.userCommentService = userCommentService;
         this.userboardService = userboardService;
+        this.userfavoriteService = userfavoriteService;
     }
 
     @GetMapping("/api/user-info")
@@ -48,5 +48,11 @@ public class UserInfoController {
     @GetMapping("/user/board/list")
     public List<UserBoardDTO> getUserBoards(Authentication authentication) {
         return userboardService.getBoardsByUser();
+    }
+
+//    내가 좋아요 누른 게시글 조회
+    @GetMapping("/user/like-board")
+    public List<UserFavoriteDTO> getUserFavoriteBoards(Authentication authentication) {
+        return userfavoriteService.getFavoriteBoardsByUser(authentication);
     }
 }
