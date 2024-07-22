@@ -1,22 +1,18 @@
 package com.daeseonbae.DSBBackend.controller;
 
-import com.daeseonbae.DSBBackend.dto.CustomUserDetails;
 import com.daeseonbae.DSBBackend.dto.UserBoardDTO;
 import com.daeseonbae.DSBBackend.dto.UserCommentDTO;
+import com.daeseonbae.DSBBackend.dto.UserFavoriteCommentDTO;
 import com.daeseonbae.DSBBackend.dto.UserFavoriteDTO;
 import com.daeseonbae.DSBBackend.entity.UserEntity;
-import com.daeseonbae.DSBBackend.service.*;
-//import com.daeseonbae.DSBBackend.service.UserBoardService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import com.daeseonbae.DSBBackend.service.UserBoardService;
+import com.daeseonbae.DSBBackend.service.UserCommentService;
+import com.daeseonbae.DSBBackend.service.UserFavoriteService;
+import com.daeseonbae.DSBBackend.service.UserInfoService;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 @RestController
@@ -44,15 +40,21 @@ public class UserInfoController {
         return userCommentService.getCommentsByUser(authentication);
     }
 
-//    내가 작성한 게시글 조회
+    // 내가 작성한 게시글 조회
     @GetMapping("/user/board/list")
     public List<UserBoardDTO> getUserBoards(Authentication authentication) {
         return userboardService.getBoardsByUser();
     }
 
-//    내가 좋아요 누른 게시글 조회
+    // 내가 좋아요 누른 게시글 조회
     @GetMapping("/user/like-board")
     public List<UserFavoriteDTO> getUserFavoriteBoards(Authentication authentication) {
         return userfavoriteService.getFavoriteBoardsByUser(authentication);
+    }
+
+    // 내가 좋아요 누른 댓글 조회
+    @GetMapping("/user/like-comment")
+    public List<UserFavoriteCommentDTO> getUserFavoriteComments(Authentication authentication) {
+        return userfavoriteService.getFavoriteCommentsByUser(authentication);
     }
 }
