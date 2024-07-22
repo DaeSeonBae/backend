@@ -112,7 +112,7 @@ public class CommentService {
 
     //댓글 삭제
     @Transactional
-    public boolean commentDelete(Integer commentId, Integer boardId, CommentRequestDTO commentRequestDTO, Integer userId) {
+    public boolean commentDelete(Integer commentId, Integer boardId, Integer userId) {
         try{
             Optional<BoardEntity> optionalBoardEntity = Optional.ofNullable(boardRepository.findById(boardId)
                     .orElseThrow(() -> new NoSuchElementException("번호에 맞는 게시글을 찾지 못했습니다!")));
