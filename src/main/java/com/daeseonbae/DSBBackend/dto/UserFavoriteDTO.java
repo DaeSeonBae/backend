@@ -8,6 +8,6 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class UserFavoriteDTO {
-    private Long id;
+    private int id;
     private int boardNumber;
 }

@@ -30,4 +30,7 @@ public class CommentEntity {
 
     @Column(name = "write_datetime", nullable = false)
     private LocalDateTime writeDatetime;
+
+    @Column(name = "favorite_count")
+    private Integer favoriteCount;
 }

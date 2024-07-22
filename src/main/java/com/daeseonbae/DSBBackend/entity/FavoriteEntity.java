@@ -12,11 +12,14 @@ public class FavoriteEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(name = "board_number")
-    private int boardNumber;
+    private Integer boardNumber;
+
+    @Column(name = "comment_number")
+    private Integer commentNumber;
 
     @Column(name = "user_id")
-    private int userId;
+    private Integer userId;
 }
