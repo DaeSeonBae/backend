@@ -66,12 +66,12 @@ public class CommentController {
     @DeleteMapping("/api/board/comment")
     public ResponseEntity<String> commentDelete(@RequestHeader(HttpHeaders.AUTHORIZATION) String token,
                                                 @RequestParam Integer commentId,
-                                                @RequestParam Integer boardId,
-                                                @RequestBody CommentRequestDTO commentRequestDTO){
+                                                @RequestParam Integer boardId
+                                                ){
 
         Integer userId = getUserId(token);
 
-        boolean isDelete = commentService.commentDelete(commentId,boardId,commentRequestDTO,userId);
+        boolean isDelete = commentService.commentDelete(commentId,boardId,userId);
         if(isDelete){
             return ResponseEntity.ok().build();
         }else{
