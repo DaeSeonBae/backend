@@ -32,7 +32,7 @@ public class UserBoardService {
     // BoardEntity를 UserBoardDTO로 변환
     private UserBoardDTO convertToDTO(BoardEntity boardEntity) {
         UserBoardDTO boardDTO = new UserBoardDTO();
-        boardDTO.setContent(boardEntity.getContent());
+        boardDTO.setTitle(boardEntity.getTitle());
         boardDTO.setFavoriteCount(boardEntity.getFavoriteCount());
         boardDTO.setCommentCount(boardEntity.getCommentCount());
         return boardDTO;

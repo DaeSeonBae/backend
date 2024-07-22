@@ -6,7 +6,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class UserBoardDTO {
-    private String content;
+    private String title;
     private Long favoriteCount;
     private Long commentCount;
 }
