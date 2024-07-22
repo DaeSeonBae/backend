@@ -1,17 +1,14 @@
 package com.daeseonbae.DSBBackend.controller;
 
-import com.daeseonbae.DSBBackend.dto.UserBoardDTO;
-import com.daeseonbae.DSBBackend.dto.UserCommentDTO;
-import com.daeseonbae.DSBBackend.dto.UserFavoriteCommentDTO;
-import com.daeseonbae.DSBBackend.dto.UserFavoriteDTO;
+import com.daeseonbae.DSBBackend.dto.*;
 import com.daeseonbae.DSBBackend.entity.UserEntity;
 import com.daeseonbae.DSBBackend.service.UserBoardService;
 import com.daeseonbae.DSBBackend.service.UserCommentService;
 import com.daeseonbae.DSBBackend.service.UserFavoriteService;
 import com.daeseonbae.DSBBackend.service.UserInfoService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -56,5 +53,11 @@ public class UserInfoController {
     @GetMapping("/user/like-comment")
     public List<UserFavoriteCommentDTO> getUserFavoriteComments(Authentication authentication) {
         return userfavoriteService.getFavoriteCommentsByUser(authentication);
+    }
+
+    @PutMapping("/user/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestBody PasswordResetDTO passwordResetDTO) {
+        userInfoService.resetPassword(passwordResetDTO);
+        return ResponseEntity.ok("Password reset successfully");
     }
 }
