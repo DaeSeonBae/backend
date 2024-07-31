@@ -48,7 +48,11 @@ public class JWTUtil {
 
     public boolean isExpired(String token){
         //getExpiration --> JWT의 만료시간을 가져옴 이후 현재시간과 비교하여 만료되면 true를 반환
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
+        try {
+            return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
+        } catch (Exception e) {
+            return true; // 예외 발생 시 만료된 것으로 간주
+        }
     }
 
 

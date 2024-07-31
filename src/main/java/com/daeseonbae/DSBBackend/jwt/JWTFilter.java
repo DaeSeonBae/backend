@@ -3,6 +3,7 @@ package com.daeseonbae.DSBBackend.jwt;
 import com.daeseonbae.DSBBackend.config.SecurityConfig;
 import com.daeseonbae.DSBBackend.dto.CustomUserDetails;
 import com.daeseonbae.DSBBackend.entity.UserEntity;
+import com.daeseonbae.DSBBackend.service.LogoutService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,9 +20,11 @@ import java.io.IOException;
 public class JWTFilter extends OncePerRequestFilter {
 
     private final JWTUtil jwtUtil;
+    private final LogoutService logoutService;
 
-    public JWTFilter(JWTUtil jwtUtil){
+    public JWTFilter(JWTUtil jwtUtil, LogoutService logoutService) {
         this.jwtUtil = jwtUtil;
+        this.logoutService = logoutService;
     }
 
     @Override
@@ -38,10 +41,9 @@ public class JWTFilter extends OncePerRequestFilter {
 
         String token = authorization.split(" ")[1]; //Bearer 분리
         //토큰 소멸 시간 검증
-        if (jwtUtil.isExpired(token)) {
+        if (jwtUtil.isExpired(token) || logoutService.isTokenBlacklisted(token)) {
             System.out.println("token expired");
             filterChain.doFilter(request, response);
-
             return;
         }
 
