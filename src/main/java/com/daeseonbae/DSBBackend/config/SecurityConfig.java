@@ -3,7 +3,6 @@ package com.daeseonbae.DSBBackend.config;
 import com.daeseonbae.DSBBackend.jwt.JWTFilter;
 import com.daeseonbae.DSBBackend.jwt.JWTUtil;
 import com.daeseonbae.DSBBackend.jwt.LoginFilter;
-import com.daeseonbae.DSBBackend.service.LogoutService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,13 +25,11 @@ public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
-    private final LogoutService logoutService;
 
     //아래 빈의 매개변수를 위한 생성자 주입
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, LogoutService logoutService) {
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil) {
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
-        this.logoutService = logoutService;
     }
 
     //필터에 AuthenticationManager 주입을 위한 빈 등록
@@ -90,7 +87,7 @@ public class SecurityConfig {
         http.sessionManagement((session) -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        http.addFilterBefore(new JWTFilter(jwtUtil, logoutService), LoginFilter.class);
+        http.addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
 
         //의존관계 주입 및 로그인 엔드포인트 경로 변경
         LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration),jwtUtil);
