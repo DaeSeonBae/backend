@@ -55,4 +55,9 @@ public class UserInfoService {
             userRepository.save(user);
         }
     }
+    public void deleteUser(Authentication authentication) {
+        CustomUserDetails customUserDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email = customUserDetails.getUsername();
+        userRepository.deleteByEmail(email);
+    }
 }

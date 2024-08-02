@@ -8,6 +8,8 @@ import com.daeseonbae.DSBBackend.service.UserFavoriteService;
 import com.daeseonbae.DSBBackend.service.UserInfoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -59,5 +61,12 @@ public class UserInfoController {
     public ResponseEntity<String> resetPassword(@RequestBody PasswordResetDTO passwordResetDTO) {
         userInfoService.resetPassword(passwordResetDTO);
         return ResponseEntity.ok("Password reset successfully");
+    }
+
+    @Transactional
+    @DeleteMapping("/users/sign-out")
+    public ResponseEntity<String> deleteUser(Authentication authentication) {
+        userInfoService.deleteUser(authentication);
+        return ResponseEntity.ok("User deleted successfully");
     }
 }
