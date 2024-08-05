@@ -61,6 +61,7 @@ public class CommentService {
         comment.setBoard(board);
         comment.setContent(commentRequest.getContent());
         comment.setWriteDatetime(LocalDateTime.now());
+        comment.setFavoriteCount(0);
 
         commentRepository.save(comment);
 
