@@ -32,4 +32,8 @@ public class MessageEntity {
 
     @Column(name = "sent_datetime", nullable = false)
     private LocalDateTime sentDatetime;
+
+    @ManyToOne
+    @JoinColumn(name = "board_number")
+    private BoardEntity board;
 }
