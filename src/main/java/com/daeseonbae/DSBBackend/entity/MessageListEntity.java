@@ -38,4 +38,8 @@ public class MessageListEntity {
     // 일대다 관계 설정
     @OneToMany(mappedBy = "messageList", cascade = CascadeType.ALL)
     private List<MessageContentEntity> messageContents = new ArrayList<>();
+
+    // 최근 메시지 내용을 저장할 필드
+    @Column(name = "latest_content")
+    private String latestContent;
 }

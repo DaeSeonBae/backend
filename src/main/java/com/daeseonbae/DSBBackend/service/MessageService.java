@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 
 @Service
 public class MessageService {
@@ -64,6 +65,20 @@ public class MessageService {
         messageContent.setSentDatetime(LocalDateTime.now());
 
         messageContentRepository.save(messageContent);
+
+        // 최신 메시지 내용 업데이트
+        updateLatestContent(existingMessageList);
+        messageListRepository.save(existingMessageList); // 최신 내용 저장
+    }
+
+    // 최신 메시지 업데이트
+    public void updateLatestContent(MessageListEntity messageList) {
+        String latestContent = messageList.getMessageContents().stream()
+                .max(Comparator.comparing(MessageContentEntity::getSentDatetime)) // 최신 시간 기준으로 정렬
+                .map(MessageContentEntity::getContent)
+                .orElse(null); // 가장 최근 메시지 내용 가져오기
+
+        messageList.setLatestContent(latestContent);
     }
 }
 
