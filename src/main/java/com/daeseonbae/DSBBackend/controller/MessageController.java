@@ -1,5 +1,6 @@
 package com.daeseonbae.DSBBackend.controller;
 
+import com.daeseonbae.DSBBackend.dto.MessageListDTO;
 import com.daeseonbae.DSBBackend.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -35,12 +36,9 @@ public class MessageController {
         return ResponseEntity.ok("메시지가 성공적으로 전송되었습니다.");
     }
 
-
-//    @GetMapping("/list")
-//    public ResponseEntity<List<Object[]>> getMessageList(Authentication authentication) {
-//        Integer userId = ((com.daeseonbae.DSBBackend.dto.CustomUserDetails) authentication.getPrincipal()).getId();
-//        // 사용자 ID를 기반으로 고유한 수신자 ID와 보드 번호 쌍을 가져옴
-//        List<Object[]> uniqueMessages = messageService.getUniqueReceiverIdAndBoardNumber(userId);
-//        return ResponseEntity.ok(uniqueMessages);
-//    }
+    @GetMapping("/list")
+    public ResponseEntity<List<MessageListDTO>> getMessageList() {
+        List<MessageListDTO> response = messageService.getMessageList();
+        return ResponseEntity.ok(response);
+    }
 }

@@ -1,5 +1,6 @@
 package com.daeseonbae.DSBBackend.service;
 
+import com.daeseonbae.DSBBackend.dto.MessageListDTO;
 import com.daeseonbae.DSBBackend.entity.*;
 import com.daeseonbae.DSBBackend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MessageService {
@@ -79,6 +82,19 @@ public class MessageService {
                 .orElse(null); // 가장 최근 메시지 내용 가져오기
 
         messageList.setLatestContent(latestContent);
+    }
+
+    public List<MessageListDTO> getMessageList() {
+        List<MessageListEntity> messageListEntities = messageListRepository.findAll();
+
+        // 필요한 데이터만 추출해 DTO로 변환
+        return messageListEntities.stream()
+                .map(messageList -> new MessageListDTO(
+                        messageList.getMessageId(),
+                        messageList.getBoard() != null ? messageList.getBoard().getBoardNumber() : null,
+                        messageList.getLatestContent()
+                ))
+                .collect(Collectors.toList());
     }
 }
 
