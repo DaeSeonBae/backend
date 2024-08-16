@@ -1,5 +1,6 @@
 package com.daeseonbae.DSBBackend.service;
 
+import com.daeseonbae.DSBBackend.dto.MessageContentDTO;
 import com.daeseonbae.DSBBackend.dto.MessageListDTO;
 import com.daeseonbae.DSBBackend.entity.*;
 import com.daeseonbae.DSBBackend.repository.*;
@@ -101,6 +102,18 @@ public class MessageService {
                         messageList.getBoard() != null ? messageList.getBoard().getBoardNumber() : null,
                         messageList.getLatestContent()
                 ))
+                .collect(Collectors.toList());
+    }
+
+    // messageId로 messageContent db에서 내용 확인
+    public List<MessageContentDTO> getMessageContentsByMessageId(Integer messageId) {
+        MessageListEntity messageListEntity = messageListRepository.findById(messageId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 메시지를 찾을 수 없습니다."));
+
+        List<MessageContentEntity> messageContents = messageContentRepository.findByMessageList(messageListEntity);
+
+        return messageContents.stream()
+                .map(content -> new MessageContentDTO(content.getContent(), content.getSentDatetime()))
                 .collect(Collectors.toList());
     }
 }

@@ -8,6 +8,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MessageListRepository extends JpaRepository<MessageListEntity, Integer> {
-    // sender, receiver, board에 따른 메시지 리스트 검색
-    MessageListEntity findBySenderAndReceiverAndBoard(UserEntity sender, UserEntity receiver, BoardEntity board);
 }

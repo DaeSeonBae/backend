@@ -1,5 +1,6 @@
 package com.daeseonbae.DSBBackend.controller;
 
+import com.daeseonbae.DSBBackend.dto.MessageContentDTO;
 import com.daeseonbae.DSBBackend.dto.MessageListDTO;
 import com.daeseonbae.DSBBackend.entity.MessageContentEntity;
 import com.daeseonbae.DSBBackend.service.MessageService;
@@ -41,5 +42,11 @@ public class MessageController {
     public ResponseEntity<List<MessageListDTO>> getMessageList() {
         List<MessageListDTO> response = messageService.getMessageList();
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<List<MessageContentDTO>> getMessageContents(@PathVariable Integer id) {
+        List<MessageContentDTO> messageContents = messageService.getMessageContentsByMessageId(id);
+        return ResponseEntity.ok(messageContents);
     }
 }
