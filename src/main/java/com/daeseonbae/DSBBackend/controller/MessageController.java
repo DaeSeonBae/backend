@@ -1,6 +1,7 @@
 package com.daeseonbae.DSBBackend.controller;
 
 import com.daeseonbae.DSBBackend.dto.MessageListDTO;
+import com.daeseonbae.DSBBackend.entity.MessageContentEntity;
 import com.daeseonbae.DSBBackend.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

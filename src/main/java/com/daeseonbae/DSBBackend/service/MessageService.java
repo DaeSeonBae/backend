@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,8 +30,8 @@ public class MessageService {
     public void sendMessage(Integer senderId, Integer receiverId, String receiverEmail, Integer boardId, String content) {
         UserEntity sender = userRepository.findById(senderId)
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 발신자 ID입니다."));
-
         UserEntity receiver;
+
         if (receiverId != null) {
             receiver = userRepository.findById(receiverId)
                     .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 수신자 ID입니다."));
@@ -41,47 +42,53 @@ public class MessageService {
             }
         }
 
-        // 같은 sender, receiver, board가 있는지 확인
-        MessageListEntity existingMessageList = messageListRepository.findBySenderAndReceiverAndBoard(
-                sender, receiver, boardId != null ? boardRepository.findById(boardId).orElse(null) : null);
+        BoardEntity board = boardId != null ? boardRepository.findById(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 게시글 ID입니다.")) : null;
 
-        if (existingMessageList == null) {
+        // 모든 메시지 리스트 가져오기
+        List<MessageListEntity> messageLists = messageListRepository.findAll();
+
+        // sender와 receiver의 위치가 바뀌더라도 동일한 대화를 찾도록 비교
+        Optional<MessageListEntity> existingMessageList = messageLists.stream()
+                .filter(messageList ->
+                        (messageList.getSender().equals(sender) && messageList.getReceiver().equals(receiver) ||
+                                messageList.getSender().equals(receiver) && messageList.getReceiver().equals(sender)) &&
+                                ((board == null && messageList.getBoard() == null) ||
+                                        (board != null && board.equals(messageList.getBoard())))
+                )
+                .findFirst();
+
+        MessageListEntity messageList;
+        if (existingMessageList.isPresent()) {
+            // 기존 메시지 리스트가 있으면 사용
+            messageList = existingMessageList.get();
+        } else {
             // 기존 메시지 리스트가 없으면 새로 생성
-            MessageListEntity messageList = new MessageListEntity();
+            messageList = new MessageListEntity();
             messageList.setSender(sender);
             messageList.setReceiver(receiver);
-
-            if (boardId != null) {
-                BoardEntity board = boardRepository.findById(boardId)
-                        .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 게시글 ID입니다."));
-                messageList.setBoard(board);
-            }
-
+            messageList.setBoard(board);
             messageList = messageListRepository.save(messageList);
-            existingMessageList = messageList;
         }
 
         // 메시지 내용 저장
         MessageContentEntity messageContent = new MessageContentEntity();
-        messageContent.setMessageList(existingMessageList);
+        messageContent.setMessageList(messageList);
         messageContent.setContent(content);
         messageContent.setSentDatetime(LocalDateTime.now());
-
         messageContentRepository.save(messageContent);
 
-        // 최신 메시지 내용 업데이트
-        updateLatestContent(existingMessageList);
-        messageListRepository.save(existingMessageList); // 최신 내용 저장
+        // 최신 메시지 업데이트
+        updateLatestContent(messageList);
     }
 
-    // 최신 메시지 업데이트
-    public void updateLatestContent(MessageListEntity messageList) {
-        String latestContent = messageList.getMessageContents().stream()
-                .max(Comparator.comparing(MessageContentEntity::getSentDatetime)) // 최신 시간 기준으로 정렬
-                .map(MessageContentEntity::getContent)
-                .orElse(null); // 가장 최근 메시지 내용 가져오기
-
-        messageList.setLatestContent(latestContent);
+    // 최신 메시지 내용 업데이트
+    public void updateLatestContent(MessageListEntity messageListEntity) {
+        MessageContentEntity latestContent = messageContentRepository.findTopByMessageListOrderBySentDatetimeDesc(messageListEntity);
+        if (latestContent != null) {
+            messageListEntity.setLatestContent(latestContent.getContent());
+            messageListRepository.save(messageListEntity);
+        }
     }
 
     public List<MessageListDTO> getMessageList() {
