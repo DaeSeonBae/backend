@@ -10,4 +10,7 @@ public interface MessageContentRepository extends JpaRepository<MessageContentEn
     MessageContentEntity findTopByMessageListOrderBySentDatetimeDesc(MessageListEntity messageListEntity);
 
     List<MessageContentEntity> findByMessageList(MessageListEntity messageListEntity);
+
+    // 특정 message_list와 연관된 메시지를 모두 삭제
+    void deleteByMessageList(MessageListEntity messageList);
 }

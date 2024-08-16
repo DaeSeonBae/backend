@@ -49,4 +49,10 @@ public class MessageController {
         List<MessageContentDTO> messageContents = messageService.getMessageContentsByMessageId(id);
         return ResponseEntity.ok(messageContents);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteMessage(@PathVariable Integer id) {
+        messageService.deleteMessageById(id);
+        return ResponseEntity.ok("메시지가 성공적으로 삭제되었습니다.");
+    }
 }

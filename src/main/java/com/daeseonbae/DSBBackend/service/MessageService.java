@@ -6,6 +6,7 @@ import com.daeseonbae.DSBBackend.entity.*;
 import com.daeseonbae.DSBBackend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -115,6 +116,19 @@ public class MessageService {
         return messageContents.stream()
                 .map(content -> new MessageContentDTO(content.getContent(), content.getSentDatetime()))
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void deleteMessageById(Integer messageId) {
+        // message_list에서 해당 메시지를 찾습니다.
+        MessageListEntity messageList = messageListRepository.findById(messageId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 메시지가 존재하지 않습니다."));
+
+        // 해당 message_id와 연관된 모든 message_content를 먼저 삭제합니다.
+        messageContentRepository.deleteByMessageList(messageList);
+
+        // message_list에서도 해당 메시지를 삭제합니다.
+        messageListRepository.delete(messageList);
     }
 }
 
