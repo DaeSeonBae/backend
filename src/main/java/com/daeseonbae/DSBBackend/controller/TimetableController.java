@@ -3,6 +3,7 @@ package com.daeseonbae.DSBBackend.controller;
 import com.daeseonbae.DSBBackend.dto.TimetableRequestDTO;
 import com.daeseonbae.DSBBackend.service.TimetableService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -19,9 +20,15 @@ public class TimetableController {
             @RequestBody TimetableRequestDTO timetableRequestDTO,
             Authentication authentication) {
 
-        // 타임테이블 서비스에서 유저의 수업 정보를 저장
-        timetableService.saveTimetable(timetableRequestDTO, authentication);
-
-        return ResponseEntity.ok("200 OK");
+        try {
+            timetableService.saveTimetable(timetableRequestDTO, authentication);
+            return ResponseEntity.ok("200 OK");
+        } catch (IllegalArgumentException e) {
+            // IllegalArgumentException 발생 시, 예외 메시지를 반환
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
+            // 다른 예외 발생 시, 일반적인 오류 메시지 반환
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("A server error occurred: " + e.getMessage());
+        }
     }
 }
