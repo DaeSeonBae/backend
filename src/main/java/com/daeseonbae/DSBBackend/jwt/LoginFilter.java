@@ -80,7 +80,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     //로그인 실패시 실행하는 메소드
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-        logger.error("로그인 실패 에러 -->",failed.getMessage());
+        logger.error("로그인 에러 출력: {}", failed.getMessage(), failed);
         logger.debug("Authentication failed 출력 -->",failed);
 
         //response.setStatus(401);
