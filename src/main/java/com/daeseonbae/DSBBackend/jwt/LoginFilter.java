@@ -83,6 +83,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         logger.error("로그인 실패 에러 -->",failed.getMessage());
         logger.debug("Authentication failed 출력 -->",failed);
 
-        response.setStatus(401);
+        //response.setStatus(401);
+        response.setContentType("application/json");
+        response.getWriter().write("{\"error\": \"Authentication failed: " + failed.getMessage() + "\"}");
+        response.getWriter().flush();
     }
 }
