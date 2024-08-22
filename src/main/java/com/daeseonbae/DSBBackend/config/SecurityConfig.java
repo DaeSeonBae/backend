@@ -17,7 +17,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 @Configuration
@@ -56,14 +55,13 @@ public class SecurityConfig {
                                 CorsConfiguration configuration = new CorsConfiguration();
 
                                 //프론트 서버 주소
-                                configuration.setAllowedOrigins(Collections.singletonList("https://daeseonbae.com"));
+                                configuration.setAllowedOrigins(Collections.singletonList("https://daeseonbae.com/"));
                                 configuration.setAllowedMethods(Collections.singletonList("*"));
                                 configuration.setAllowCredentials(true);
                                 configuration.setAllowedHeaders(Collections.singletonList("*"));
                                 configuration.setMaxAge(43200L); //허용시간
 
-                                configuration.setExposedHeaders(Arrays.asList("Access-Control-Allow-Headers", "Authorization, x-xsrf-token, Access-Control-Allow-Headers, Origin, Accept, X-Requested-With, " +
-                                        "Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers"));
+                                configuration.setExposedHeaders(Collections.singletonList("Authorization"));
 
                                 return configuration;
                             }
