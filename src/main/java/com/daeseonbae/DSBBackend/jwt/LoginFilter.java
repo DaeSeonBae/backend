@@ -1,10 +1,13 @@
 package com.daeseonbae.DSBBackend.jwt;
 
 import com.daeseonbae.DSBBackend.dto.CustomUserDetails;
+import com.daeseonbae.DSBBackend.service.CommentService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,6 +24,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public LoginFilter(AuthenticationManager authenticationManager,JWTUtil jwtUtil) {
         this.authenticationManager = authenticationManager;
@@ -75,6 +80,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     //로그인 실패시 실행하는 메소드
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+        logger.error("로그인 실패 에러 -->",failed.getMessage());
+        logger.debug("Authentication failed 출력 -->",failed);
+
         response.setStatus(401);
     }
 }
