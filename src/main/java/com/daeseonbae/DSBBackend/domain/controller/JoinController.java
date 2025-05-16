@@ -1,0 +1,28 @@
+package com.daeseonbae.DSBBackend.domain.controller;
+
+import com.daeseonbae.DSBBackend.domain.dto.user.JoinDTO;
+import com.daeseonbae.DSBBackend.domain.service.JoinService;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class JoinController {
+
+    private final JoinService joinService;
+
+    public JoinController(JoinService joinService) {
+        this.joinService = joinService;
+    }
+
+    @PostMapping("/api/signup")
+    public String joinProcess(JoinDTO joinDTO){
+
+        boolean success = joinService.joinProcess(joinDTO);
+
+        if(success){
+            return "ok";
+        }else{
+            return "error";
+        }
+    }
+}
