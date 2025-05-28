@@ -1,5 +1,6 @@
 package com.daeseonbae.DSBBackend.domain.service.userinfo;
 
+import com.daeseonbae.DSBBackend.domain.UserRole;
 import com.daeseonbae.DSBBackend.domain.dto.CustomUserDetails;
 import com.daeseonbae.DSBBackend.domain.dto.user.PasswordResetDTO;
 import com.daeseonbae.DSBBackend.domain.entity.UserEntity;
@@ -36,6 +37,7 @@ public class UserInfoService {
         Iterator<? extends GrantedAuthority> iter = authorities.iterator();
         GrantedAuthority auth = iter.next();
         String role = auth.getAuthority();
+        UserRole userRole = UserRole.valueOf(role);
 
         UserEntity userEntity = new UserEntity();
 
@@ -43,7 +45,7 @@ public class UserInfoService {
         userEntity.setEmail(email);
         userEntity.setDepartment(department);
         userEntity.setNickname(nickName);
-        userEntity.setRole(role);
+        userEntity.setRole(userRole);
 
         return userEntity;
     }

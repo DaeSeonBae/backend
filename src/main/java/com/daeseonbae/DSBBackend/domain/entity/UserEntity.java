@@ -1,21 +1,25 @@
 package com.daeseonbae.DSBBackend.domain.entity;
 
 
+import com.daeseonbae.DSBBackend.domain.UserRole;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
-@Table(name = "user", uniqueConstraints = {@UniqueConstraint(columnNames = {"nickname"})})
+@Table(name = "user")
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(unique = true)
     private String email;
 
     @JsonIgnore
@@ -25,5 +29,6 @@ public class UserEntity {
 
     private String nickname;
 
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
 }

@@ -18,6 +18,7 @@ public enum AppHttpStatus {
      * 400 : 잘못된 문법으로 인해 요청을 이해할 수 없음
      */
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
+    DUPLICATE_EMAIL(HttpStatus.BAD_REQUEST, "이미 존재하는 이메일입니다."),
 
     /**
      * 401 : 인증된 사용자가 아님
@@ -38,7 +39,9 @@ public enum AppHttpStatus {
     /**
      * 500 : 서버 내부에서 에러가 발생함
      */
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부에 에러가 발생했습니다.");
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부에 에러가 발생했습니다."),
+    USER_SAVE_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "회원 가입중 에러가 발생했습니다."),
+    DATABASE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "데이터 처리중 에러가 발생했습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

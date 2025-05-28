@@ -1,5 +1,6 @@
 package com.daeseonbae.DSBBackend.global.jwt;
 
+import com.daeseonbae.DSBBackend.domain.UserRole;
 import com.daeseonbae.DSBBackend.domain.dto.CustomUserDetails;
 import com.daeseonbae.DSBBackend.domain.entity.UserEntity;
 import jakarta.servlet.FilterChain;
@@ -46,6 +47,7 @@ public class JWTFilter extends OncePerRequestFilter {
         Integer id = jwtUtil.getId(token);
         String email = jwtUtil.getUsername(token);
         String role = jwtUtil.getRole(token);
+        UserRole userRole = UserRole.valueOf(role);
         String nickName = jwtUtil.getNickName(token);
         String department = jwtUtil.getDepartment(token);
 
@@ -57,7 +59,7 @@ public class JWTFilter extends OncePerRequestFilter {
         userEntity.setDepartment(department);
         //비밀번호값의 경우 토큰에 존재 하지 않음 따라서 매번 DB요청을 방지를 위해 임의로 작성
         userEntity.setPassword("1234");
-        userEntity.setRole(role);
+        userEntity.setRole(userRole);
 
         //회원정보 객체에 담기
         CustomUserDetails customUserDetails = new CustomUserDetails(userEntity);
